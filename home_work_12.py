@@ -1,6 +1,5 @@
 import phonenumbers
 import shelve
-import re
 from itertools import islice
 from collections import UserDict
 from datetime import datetime
@@ -101,6 +100,18 @@ class AddressBook(UserDict):
             if start >= len(self.data):
                 break
 
+# -----------------------shelve-------------------
+    def save_data(self, file_name):
+        self.file_name = file_name
+        with shelve.open(self.file_name) as data_book:
+            data_book[rec.name.value] = self.data
+
+    def read_data(self, file_name):
+        self.file_name = file_name
+        with shelve.open(self.file_name) as states:
+            for key in states:
+                return f'{key}: {states[key]}'
+
     def search_str(self, value):
         user_list = []
         if len(value) < 3:
@@ -172,35 +183,20 @@ if __name__ == '__main__':
     ab.add_record(rec3)
 
 # -------------iterator-------------------------------------
+    print('-----------------Iterator------------------')
     it = ab.iterator(2)
     for i in it:
         print(i)
 
-# -------------'My Address book'----------------------------
-    file_name = 'ad_book'
-    with shelve.open(file_name) as ad:
-        print('----------------------------------------------')
-        ad['Bill'] = ["+380678996765", "+380965035661"]
-        ad['Ann'] = ["+380677654321"]
-        ad['Lili'] = ["+380678991111"]
-        ad['Dan'] = ["+380678922222"]
-
-        # Способ обновить значение -------------------------------
-        # який спосіб кращий, оскільки додає не в основной словник????
-        temp = ad['Ann']
-        temp.append("+380678997777")
-        ad['Ann'] = temp
-
-        ad['My Address book'] = ab
-    #   спробувати додати конкретно щось у цей словник !!!!!!!!
-
-    with shelve.open(file_name) as states:
-        for key in states:
-            print(f'{key}: {states[key]}')
-        print('----------------------------------------------')
-        print(states['My Address book'])
+# -------------'My Address book'---shelve-------------------
+    print('-------My Address book file--------------')
+    filename = 'Database/ad_book'
+    adr_book_s = ab.save_data(filename)
+    adr_book_r = ab.read_data(filename)
+    print(adr_book_r)
 
 # -------------'Search'-----------------------------------------
+    print('-----------------Search------------------')
     try:
         s_ch = ab.search_str("777")
         print(s_ch)
