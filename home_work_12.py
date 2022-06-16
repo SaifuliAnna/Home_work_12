@@ -104,7 +104,7 @@ class AddressBook(UserDict):
     def save_data(self, file_name):
         self.file_name = file_name
         with shelve.open(self.file_name) as data_book:
-            data_book[rec.name.value] = self.data
+            data_book["My Address book"] = self.data
 
     def read_data(self, file_name):
         self.file_name = file_name
